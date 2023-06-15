@@ -3,7 +3,6 @@
 # Executar o comando sudo su no início do script
 sudo -s <<EOF
 
-# Passo 5
 echo "Adicionando compatibilidade 32bits..."
 dpkg --add-architecture i386
 apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
