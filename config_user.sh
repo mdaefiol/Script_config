@@ -8,17 +8,13 @@ echo "Adicionando compatibilidade 32bits..."
 dpkg --add-architecture i386
 apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
 apt-get install sshpass
+apt-get install sshfs
 apt-get install zip
 echo "Executando apt update..."
 apt update
 echo "Executando apt upgrade..."
 apt upgrade
 EOF
-
-# Pedir ao usuário para inserir a senha do SCP
-echo " "
-read -s -p "Digite a senha root do seu computador: " sudopass
-echo " "
 
 # Passo 6
 echo " "
