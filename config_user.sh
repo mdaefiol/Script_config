@@ -16,7 +16,7 @@ echo "Executando apt upgrade..."
 apt upgrade
 EOF
 
-# Passo 6
+# Compatibilidade de HASH
 echo " "
 echo " "
 echo " "
@@ -80,6 +80,7 @@ unzip donuts-plus.zip
 rm donuts-plus.zip 
 cd 
 
+# Copiando libs e criando link simbolico
 sudo -s <<EOF
 # Copiando o arquivo com o jogo
 echo "Copiando libs para funcionamento do jogo..."
