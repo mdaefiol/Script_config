@@ -3,11 +3,11 @@
 # Executar o comando sudo su no início do script
 sudo -s <<EOF
 
+# Passo 5
 echo "Adicionando compatibilidade 32bits..."
 dpkg --add-architecture i386
 apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
 apt-get install sshpass
-apt-get install sshfs
 apt-get install zip
 echo "Executando apt update..."
 apt update
@@ -15,7 +15,12 @@ echo "Executando apt upgrade..."
 apt upgrade
 EOF
 
-# Compatibilidade de HASH
+# Pedir ao usuário para inserir a senha do SCP
+echo " "
+read -s -p "Digite a senha root do seu computador: " sudopass
+echo " "
+
+# Passo 6
 echo " "
 echo " "
 echo " "
@@ -79,7 +84,6 @@ unzip donuts-plus.zip
 rm donuts-plus.zip 
 cd 
 
-# Copiando libs e criando link simbolico
 sudo -s <<EOF
 # Copiando o arquivo com o jogo
 echo "Copiando libs para funcionamento do jogo..."
@@ -263,3 +267,4 @@ ln -s /lib/libc-2.11.1.so /lib/libc.so.6
 ln -s /lib/ld-2.11.1.so /lib/ld-linux.so.2
 echo "Criacao de links finalizada."
 EOF
+
