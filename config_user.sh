@@ -1,19 +1,19 @@
 #!/bin/bash
 
 # Executar o comando sudo su no início do script
-sudo -s <<EOF
 
 # Passo 5
 echo "Adicionando compatibilidade 32bits..."
-dpkg --add-architecture i386
-apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
-apt-get install sshpass
-apt-get install zip
+sudo dpkg --add-architecture i386
+sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
+sudo apt-get install sshpass
+sudo apt-get install ssh
+sudo apt-get install zip
 echo "Executando apt update..."
-apt update
+sudo apt update
 echo "Executando apt upgrade..."
-apt upgrade
-EOF
+sudo apt upgrade
+
 
 # Pedir ao usuário para inserir a senha do SCP
 echo " "
@@ -38,11 +38,11 @@ echo "Lembre-se: Feche o arquivo com CTRL + X, selecionando 'Y' (yes) para salva
 echo " "
 read -p "Digite 'ok' para prosseguir com a inclusão das linhas no arquivo my.conf: " resposta
 if [[ $resposta != "ok" ]]; then
-    echo "Operação cancelada pelo usuário."
-    exit 0
+  echo "Operação cancelada pelo usuário."
+  exit 0
 fi
 echo "Executando nano /etc/ssh/ssh_config.d/my.conf..."
-nano /etc/ssh/ssh_config.d/my.conf
+sudo nano /etc/ssh/ssh_config.d/my.conf
 
 # Aguarda o usuário editar o arquivo
 echo " "
@@ -52,8 +52,9 @@ read -p "Pressione Enter quando terminar de editar o arquivo my.conf"
 echo " "
 echo "Criando diretório Boardcomm..."
 cd
-mkdir Boardcomm2
-cd Boardcomm2
+sudo mkdir Boardcomm
+sudo chmod 777 Boardcomm
+cd Boardcomm
 
 #Copiando arquivos do servidor 241: login
 echo " "
@@ -63,18 +64,23 @@ read -p "Digite o nome de usuário: " username
 read -s -p "Digite a senha para o servidor: " password
 echo " "
 
+# Execute o comando SSH no script
+ssh -p 1337 -T $username@192.168.1.241 "exit"
+# sudo echo $password | sshpass -p $password
+# echo 'y'
+
 # Comandos SCP utilizando o nome de usuário e senha fornecidos pelo usuário
 echo "Copiando arquivos de configuração..."
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/dev_game/adm.data .
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/dev_game/hli.pic30.bin .
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/dev_game/tool .
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/dev_game/programmer .
+sudo echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/dev_game/adm.data .
+sudo echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/dev_game/hli.pic30.bin .
+sudo echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/dev_game/tool .
+sudo echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/dev_game/programmer .
 echo "Arquivos de configuração foram copiados."
 echo " "
 
 # Copiando o arquivo com o jogo
 echo "Copiando arquivos do jogo..."
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/games .
+sudo echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/games .
 echo "Arquivos do jogo foram copiados."
 echo " "
 
@@ -84,99 +90,99 @@ unzip donuts-plus.zip
 rm donuts-plus.zip 
 cd 
 
-sudo -s <<EOF
 # Copiando o arquivo com o jogo
+sudo su << EOF
 echo "Copiando libs para funcionamento do jogo..."
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/liblber-2.4.so.2.5.4 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libldap_r-2.4.so.2.5.4 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libldap_r-2.4.so.2.5.4 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libmysqlclient.so.16.0.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libsasl2.so.2.0.23 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgnutls.so.26.14.12 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libtasn1.so.3.1.7 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgcrypt.so.11.5.2 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libstdc++.so.6.0.13 /usr/lib/libstdc++.so.6.0.13
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libQtCore.so.4.6.2 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libQtGui.so.4.6.2 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libQtNetwork.so.4.6.2 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libSDL-1.2.so.0.11.3 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libz.so.1.2.3.3 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgthread-2.0.so.0.2400.1 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libglib-2.0.so.0.2400.1 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libfontconfig.so.1.4.4 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libaudio.so.2.4 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libpng.so /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libfreetype.so.6.3.22 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgobject-2.0.so.0.2400.1 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libSM.so.6.0.1 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libICE.so.6.3.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXrender.so.1.3.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXext.so.6.4.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libX11.so.6.3.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libpulse-simple.so.0.0.3 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libpulse.so.0.12.2 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libdirectfb-1.2.so.0.8.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libfusion-1.2.so.0.8.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libdirect-1.2.so.0.8.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libpcre.so.3.12.1 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libexpat.so.1.5.2 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXt.so.6.0.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXau.so.6.0.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libuuid.so.1.3.0 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libxcb.so.1.1.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXtst.so.6.1.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXdmcp.so.6.0.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libwrap.so.0.7.6 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libsndfile.so.1.0.21 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libdbus-1.so.3.4.0 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXi.so.6.1.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libFLAC.so.8.2.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libvorbisenc.so.2.0.6 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libvorbis.so.0.4.3 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libogg.so.0.6.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libpulsecommon-0.9.21.so /usr/lib
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libaviplay-0.7.so.0.0.48 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libevent-1.4.so.2.1.3 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libcurl.so /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libhiredis.so.0.13 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libjson-c.so.3.0.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libmysqlpp.so.3.0.9 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libavcodec.so.52.20.1 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libavformat.so.52.31.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXinerama.so.1.0.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXxf86vm.so.1.0.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXxf86dga.so.1.0.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libXft.so.2.1.13 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libmysqlclient.so.16.0.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libavutil.so.49.15.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgsm.so.1.0.12 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libschroedinger-1.0.so.0.2.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libspeex.so.1.5.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libtheora.so.0.3.10 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libbz2.so.1.0.4 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/liboil-0.3.so.0.3.0 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/liblber-2.4.so.2.5.4 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libldap_r-2.4.so.2.5.4 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libssl.so.0.9.8 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libcrypto.so.0.9.8 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libsasl2.so.2.0.23 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgssapi_krb5.so.2.2 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgnutls.so.26.14.12 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libkrb5.so.3.3 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libk5crypto.so.3.1 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libcom_err.so.2.1 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libkrb5support.so.0.1 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libkeyutils-1.2.so /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libtasn1.so.3.1.7 /usr/lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgcrypt.so.11.5.2 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgpg-error.so.0.4.0 /lib/
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libqrencode.so.3.9.0 /usr/local/lib/libqrencode.so.3.9.0
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libstdc++.so.6.0.13 /usr/lib
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libpthread-2.11.1.so /lib
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libm-2.11.1.so /lib
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/libgcc_s.so.1 /lib
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/lib/libc-2.11.1.so /lib
-echo $password | sshpass -p $password scp -P 1337 -r $username@192.168.1.241:/home/shared/orion-dev/libs/lib/ld-2.11.1.so /lib
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/liblber-2.4.so.2.5.4 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libldap_r-2.4.so.2.5.4 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libldap_r-2.4.so.2.5.4 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libmysqlclient.so.16.0.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libsasl2.so.2.0.23 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgnutls.so.26.14.12 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libtasn1.so.3.1.7 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgcrypt.so.11.5.2 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libstdc++.so.6.0.13 /usr/lib/libstdc++.so.6.0.13
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libQtCore.so.4.6.2 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libQtGui.so.4.6.2 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libQtNetwork.so.4.6.2 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libSDL-1.2.so.0.11.3 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libz.so.1.2.3.3 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgthread-2.0.so.0.2400.1 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libglib-2.0.so.0.2400.1 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libfontconfig.so.1.4.4 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libaudio.so.2.4 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libpng.so /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libfreetype.so.6.3.22 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgobject-2.0.so.0.2400.1 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libSM.so.6.0.1 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libICE.so.6.3.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXrender.so.1.3.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXext.so.6.4.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libX11.so.6.3.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libpulse-simple.so.0.0.3 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libpulse.so.0.12.2 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libdirectfb-1.2.so.0.8.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libfusion-1.2.so.0.8.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libdirect-1.2.so.0.8.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libpcre.so.3.12.1 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libexpat.so.1.5.2 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXt.so.6.0.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXau.so.6.0.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libuuid.so.1.3.0 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libxcb.so.1.1.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXtst.so.6.1.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXdmcp.so.6.0.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libwrap.so.0.7.6 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libsndfile.so.1.0.21 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libdbus-1.so.3.4.0 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXi.so.6.1.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libFLAC.so.8.2.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libvorbisenc.so.2.0.6 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libvorbis.so.0.4.3 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libogg.so.0.6.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libpulsecommon-0.9.21.so /usr/lib
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libaviplay-0.7.so.0.0.48 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libevent-1.4.so.2.1.3 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libcurl.so /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libhiredis.so.0.13 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libjson-c.so.3.0.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libmysqlpp.so.3.0.9 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libavcodec.so.52.20.1 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libavformat.so.52.31.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXinerama.so.1.0.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXxf86vm.so.1.0.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXxf86dga.so.1.0.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libXft.so.2.1.13 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libmysqlclient.so.16.0.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libavutil.so.49.15.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgsm.so.1.0.12 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libschroedinger-1.0.so.0.2.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libspeex.so.1.5.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libtheora.so.0.3.10 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libbz2.so.1.0.4 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/liboil-0.3.so.0.3.0 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/liblber-2.4.so.2.5.4 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libldap_r-2.4.so.2.5.4 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libssl.so.0.9.8 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libcrypto.so.0.9.8 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libsasl2.so.2.0.23 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgssapi_krb5.so.2.2 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgnutls.so.26.14.12 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libkrb5.so.3.3 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libk5crypto.so.3.1 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libcom_err.so.2.1 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libkrb5support.so.0.1 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libkeyutils-1.2.so /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libtasn1.so.3.1.7 /usr/lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgcrypt.so.11.5.2 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgpg-error.so.0.4.0 /lib/
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libqrencode.so.3.9.0 /usr/local/lib/libqrencode.so.3.9.0
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libstdc++.so.6.0.13 /usr/lib
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libpthread-2.11.1.so /lib
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libm-2.11.1.so /lib
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/libgcc_s.so.1 /lib
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/lib/libc-2.11.1.so /lib
+echo $password | sshpass -p $password scp -P 1337 $username@192.168.1.241:/home/shared/orion-dev/libs/lib/ld-2.11.1.so /lib
 echo "Bibliotecas foram copiadas..."
 
 echo " " 
@@ -265,6 +271,5 @@ ln -s /lib/libpthread-2.11.1.so /lib/libpthread.so.0
 ln -s /lib/libm-2.11.1.so /lib/libm.so.6
 ln -s /lib/libc-2.11.1.so /lib/libc.so.6
 ln -s /lib/ld-2.11.1.so /lib/ld-linux.so.2
-echo "Criacao de links finalizada."
 EOF
-
+echo "Criacao de links finalizada."
